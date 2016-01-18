@@ -123,6 +123,9 @@ func TestScanner(t *testing.T) {
 	const eol = "\r\n"
 	var s *Scanner
 	for i, tt := range scannerTests {
+		// Didn't want to repeat the input string in the test
+		// suite, so setting it here instead.
+		tt.expected.Raw = tt.in + eol
 		s = NewScanner(strings.NewReader(tt.in + eol))
 		m, err := s.Next()
 		if err != tt.err {

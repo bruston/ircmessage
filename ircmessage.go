@@ -29,6 +29,7 @@ var (
 type Scanner struct {
 	src            *bufio.Reader
 	buf            *bytes.Buffer // Temporary buffer that are re-used where possible.
+	rawBuf         []rune        // Keeps track of the current raw IRC message
 	currentMsgSize int
 	lastRuneSize   int // There is never a need to unread further than one rune, so this is enough.
 }
@@ -47,6 +48,7 @@ func (s *Scanner) read() (rune, error) {
 	}
 	s.lastRuneSize = n
 	s.currentMsgSize += n
+	s.rawBuf = append(s.rawBuf, rn)
 	if s.currentMsgSize > maxMessageSize {
 		return 0, ErrMessageMalformed
 	}
@@ -58,6 +60,7 @@ func (s *Scanner) unread() error {
 		return err
 	}
 	s.currentMsgSize -= s.lastRuneSize
+	s.rawBuf = s.rawBuf[:len(s.rawBuf)-1]
 	return nil
 }
 
@@ -239,6 +242,7 @@ func (s *Scanner) isLineEnd() (bool, error) {
 }
 
 func (s *Scanner) Next() (Message, error) {
+	s.rawBuf = make([]rune, 0, 1024)
 	s.currentMsgSize = 0
 	var msg Message
 	ch, err := s.read()
@@ -284,6 +288,7 @@ func (s *Scanner) Next() (Message, error) {
 		return Message{}, err
 	}
 	if end {
+		msg.Raw = string(s.rawBuf)
 		return msg, nil
 	}
 	s.unread()
@@ -291,5 +296,6 @@ func (s *Scanner) Next() (Message, error) {
 	if err != nil {
 		return Message{}, err
 	}
+	msg.Raw = string(s.rawBuf)
 	return msg, nil
 }
