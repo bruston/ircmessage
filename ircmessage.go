@@ -206,8 +206,7 @@ func (s *Scanner) readParams() ([]string, error) {
 	}
 	// A colon indicates a trailing parameter, read
 	// everything from after the colon to line ending
-	// and return it as a string slice with a single
-	// element.
+	// and append it to params.
 	paramString := strings.Split(s.buf.String(), tokenSpace)
 	for i, v := range paramString {
 		if strings.HasPrefix(v, tokenColon) {
