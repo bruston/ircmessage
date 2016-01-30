@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 )
@@ -73,6 +74,16 @@ type Message struct {
 	Prefix  string
 	Command string
 	Params  []string
+}
+
+func (m Message) String() string {
+	return fmt.Sprintf("Raw: %s\nTags: %#v\nPrefix: %s\nCommand: %s\nParams: %#v\n",
+		m.Raw,
+		m.Tags,
+		m.Prefix,
+		m.Command,
+		m.Params,
+	)
 }
 
 func (s *Scanner) skipSpace() {
