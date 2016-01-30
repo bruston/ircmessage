@@ -22,10 +22,7 @@ const (
 	tokenSpace     = " "
 )
 
-var (
-	ErrUnexpectedEOF    = errors.New("unexpected EOF")
-	ErrMessageMalformed = errors.New("message malformed")
-)
+var ErrMessageMalformed = errors.New("message malformed")
 
 type Scanner struct {
 	src            *bufio.Reader
@@ -103,7 +100,7 @@ func (s *Scanner) readTags() (map[string]string, error) {
 		ch, err := s.read()
 		if err != nil {
 			if err == io.EOF {
-				return nil, ErrUnexpectedEOF
+				return nil, io.ErrUnexpectedEOF
 			}
 			return nil, err
 		}
@@ -144,7 +141,7 @@ func (s *Scanner) readPrefix() (string, error) {
 		ch, err := s.read()
 		if err != nil {
 			if err == io.EOF {
-				return "", ErrUnexpectedEOF
+				return "", io.ErrUnexpectedEOF
 			}
 			return "", err
 		}
@@ -164,7 +161,7 @@ func (s *Scanner) readCommand() (string, error) {
 		ch, err := s.read()
 		if err != nil {
 			if err == io.EOF {
-				return "", ErrUnexpectedEOF
+				return "", io.ErrUnexpectedEOF
 			}
 			return "", err
 		}
@@ -187,7 +184,7 @@ func (s *Scanner) readTrailingParam() (string, error) {
 		ch, err := s.read()
 		if err != nil {
 			if err == io.EOF {
-				return "", ErrUnexpectedEOF
+				return "", io.ErrUnexpectedEOF
 			}
 			return "", err
 		}
@@ -212,7 +209,7 @@ func (s *Scanner) readParams() ([]string, error) {
 		ch, err := s.read()
 		if err != nil {
 			if err == io.EOF {
-				return nil, ErrUnexpectedEOF
+				return nil, io.ErrUnexpectedEOF
 			}
 			return nil, err
 		}
@@ -276,7 +273,7 @@ func (s *Scanner) next() (Message, error) {
 		ch, err = s.read()
 		if err != nil {
 			if err == io.EOF {
-				return Message{}, ErrUnexpectedEOF
+				return Message{}, io.ErrUnexpectedEOF
 			}
 			return Message{}, err
 		}
