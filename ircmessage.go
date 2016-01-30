@@ -29,11 +29,14 @@ var (
 type Scanner struct {
 	src            *bufio.Reader
 	buf            *bytes.Buffer // Temporary buffer that are re-used where possible.
-	rawBuf         []rune        // Keeps track of the current raw IRC message
+	rawBuf         []rune        // Keeps track of the current raw IRC message.
+	message        Message       // Last message parsed.
+	err            error         // Last error encountered.
 	currentMsgSize int
 	lastRuneSize   int // There is never a need to unread further than one rune, so this is enough.
 }
 
+// NewScanner returns a new Scanner to read from r.
 func NewScanner(r io.Reader) *Scanner {
 	return &Scanner{
 		src: bufio.NewReader(r),
@@ -240,7 +243,7 @@ func (s *Scanner) isLineEnd() (bool, error) {
 	return false, nil
 }
 
-func (s *Scanner) Next() (Message, error) {
+func (s *Scanner) next() (Message, error) {
 	s.rawBuf = make([]rune, 0, 1024)
 	s.currentMsgSize = 0
 	var msg Message
@@ -297,4 +300,26 @@ func (s *Scanner) Next() (Message, error) {
 	}
 	msg.Raw = string(s.rawBuf)
 	return msg, nil
+}
+
+func (s *Scanner) Scan() bool {
+	if s.err != nil {
+		return false
+	}
+	msg, err := s.next()
+	if err != nil {
+		s.err = err
+		return false
+	}
+	s.message = msg
+	return true
+}
+
+func (s *Scanner) Message() Message { return s.message }
+
+func (s *Scanner) Err() error {
+	if s.err == nil || s.err == io.EOF {
+		return nil
+	}
+	return s.err
 }

@@ -1,7 +1,6 @@
 package ircmessage
 
 import (
-	"io"
 	"reflect"
 	"strings"
 	"testing"
@@ -127,15 +126,14 @@ func TestScanner(t *testing.T) {
 		// suite, so setting it here instead.
 		tt.expected.Raw = tt.in + eol
 		s = NewScanner(strings.NewReader(tt.in + eol))
-		m, err := s.Next()
-		if err != tt.err {
-			t.Errorf("%d. expecting error: %v got %v", i, tt.err, err)
+		for s.Scan() {
+			m := s.Message()
+			if !reflect.DeepEqual(tt.expected, m) {
+				t.Errorf("%d. expecting message: %#v\nbut received: %#v", i, tt.expected, m)
+			}
 		}
-		if !reflect.DeepEqual(tt.expected, m) {
-			t.Errorf("%d. expecting message: %#v\nbut received: %#v", i, tt.expected, m)
-		}
-		if _, err = s.Next(); err != io.EOF {
-			t.Errorf("expecting error io.EOF got: %v", err)
+		if err := s.Err(); err != tt.err {
+			t.Errorf("expecting error %v got: %v", tt.err, err)
 		}
 	}
 }
