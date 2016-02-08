@@ -189,27 +189,6 @@ func (s *Scanner) readCommand() (string, error) {
 	return s.buf.String(), nil
 }
 
-func (s *Scanner) readTrailingParam() (string, error) {
-	s.buf.Reset()
-	for {
-		ch, err := s.read()
-		if err != nil {
-			if err == io.EOF {
-				return "", io.ErrUnexpectedEOF
-			}
-			return "", err
-		}
-		if ch == '\r' {
-			if ch, _ := s.read(); ch != '\n' {
-				return "", ErrMessageMalformed
-			}
-			break
-		}
-		s.buf.WriteRune(ch)
-	}
-	return s.buf.String(), nil
-}
-
 func (s *Scanner) readParams() ([]string, error) {
 	var params []string
 	s.buf.Reset()
