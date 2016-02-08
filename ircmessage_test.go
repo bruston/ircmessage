@@ -137,3 +137,37 @@ func TestScanner(t *testing.T) {
 		}
 	}
 }
+
+var prefixTests = []struct {
+	in       string
+	expected *Prefix
+}{
+	{"nick", &Prefix{Nickname: "nick"}},
+	{"nick!user", &Prefix{Nickname: "nick", User: "user"}},
+	{"se.rv.er", &Prefix{IsServer: true, Host: "se.rv.er"}},
+	{"nick!us.er@host", &Prefix{Nickname: "nick", User: "us.er", Host: "host"}},
+	{"nick!", &Prefix{Nickname: "nick"}},
+	{"nick@", &Prefix{Nickname: "nick"}},
+	{"nick!user!resu@host", &Prefix{Nickname: "nick", User: "user!resu", Host: "host"}},
+	{"nick@kcin!user@host", &Prefix{Nickname: "nick@kcin", User: "user", Host: "host"}},
+	{"nick!user@host!resu", &Prefix{Nickname: "nick", User: "user", Host: "host!resu"}},
+	{"nick!user@host@tsoh", &Prefix{Nickname: "nick", User: "user", Host: "host@tsoh"}},
+	{"ni.ck!user@host", &Prefix{Nickname: "ni.ck", User: "user", Host: "host"}},
+	{"", nil},
+	{"@host", nil},
+	{"!user@host", nil},
+	{"!@host", nil},
+	{"!user@", nil},
+}
+
+func TestParsePrefix(t *testing.T) {
+	for i, tt := range prefixTests {
+		p := ParsePrefix(tt.in)
+		if p == nil && tt.expected != nil {
+			t.Fatalf("%d. expecting %q, got nil", i, tt.expected)
+		}
+		if !reflect.DeepEqual(p, tt.expected) {
+			t.Errorf("%d. expecting prefix: %v, got %v", i, *tt.expected, *p)
+		}
+	}
+}

@@ -350,3 +350,46 @@ func (s *Scanner) Err() error {
 	}
 	return s.err
 }
+
+// Prefix represents a parsed IRC message prefix.
+type Prefix struct {
+	// Indicates whether the prefix is a server. If
+	// false, the prefix is a user.
+	IsServer bool
+	Nickname string
+	User     string
+	Host     string
+}
+
+// ParsePrefix accepts a string prefix and returns a
+// parsed *Prefix or nil if the input was invalid.
+func ParsePrefix(in string) *Prefix {
+	if len(in) == 0 {
+		return nil
+	}
+	if in[0] == '!' || in[0] == '@' {
+		return nil
+	}
+	dpos := strings.Index(in, ".") + 1
+	upos := strings.Index(in, "!") + 1
+	hpos := strings.Index(in[upos:], "@") + 1 + upos
+	p := &Prefix{}
+	if upos > 0 {
+		p.Nickname = in[:upos-1]
+		if hpos > 0 && upos < hpos {
+			p.User = in[upos : hpos-1]
+			p.Host = in[hpos:]
+		} else {
+			p.User = in[upos:]
+		}
+	} else if hpos > 0 {
+		p.Nickname = in[:hpos-1]
+		p.Host = in[hpos:]
+	} else if dpos > 0 {
+		p.Host = in
+		p.IsServer = true
+	} else {
+		p.Nickname = in
+	}
+	return p
+}
