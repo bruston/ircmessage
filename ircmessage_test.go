@@ -166,6 +166,9 @@ func TestParsePrefix(t *testing.T) {
 		if p == nil && tt.expected != nil {
 			t.Fatalf("%d. expecting %q, got nil", i, tt.expected)
 		}
+		if tt.expected != nil {
+			tt.expected.Raw = tt.in
+		}
 		if !reflect.DeepEqual(p, tt.expected) {
 			t.Errorf("%d. expecting prefix: %v, got %v", i, *tt.expected, *p)
 		}
