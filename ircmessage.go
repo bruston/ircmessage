@@ -47,8 +47,9 @@ type Scanner struct {
 // NewScanner returns a new Scanner to read from r.
 func NewScanner(r io.Reader) *Scanner {
 	return &Scanner{
-		src: bufio.NewReader(r),
-		buf: &bytes.Buffer{},
+		src:    bufio.NewReader(r),
+		buf:    &bytes.Buffer{},
+		rawBuf: make([]rune, 0, 1024),
 	}
 }
 
@@ -242,7 +243,7 @@ func (s *Scanner) isLineEnd() (bool, error) {
 }
 
 func (s *Scanner) next() (Message, error) {
-	s.rawBuf = make([]rune, 0, 1024)
+	s.rawBuf = s.rawBuf[:0]
 	s.currentMsgSize = 0
 	var msg Message
 	ch, err := s.read()
