@@ -304,7 +304,7 @@ func (s *Scanner) next() (Message, error) {
 // Scan advances the Scanner to the next message, which is then available
 // through the Message method. It returns false when the scan stops, either
 // by reaching the end of the input or an error. After Scan returns false,
-// the Err method will return any error that occured during scanning, the
+// the Err method will return any error that occurred during scanning, the
 // exception being if it was io.EOF, in which case Err will return nil.
 func (s *Scanner) Scan() bool {
 	if s.err != nil {
