@@ -164,7 +164,7 @@ func TestParsePrefix(t *testing.T) {
 	for i, tt := range prefixTests {
 		p := ParsePrefix(tt.in)
 		if p == nil && tt.expected != nil {
-			t.Fatalf("%d. expecting %q, got nil", i, tt.expected)
+			t.Fatalf("%d. expecting %#v, got nil", i, *tt.expected)
 		}
 		if tt.expected != nil {
 			tt.expected.Raw = tt.in
