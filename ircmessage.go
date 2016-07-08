@@ -48,7 +48,7 @@ type Scanner struct {
 func NewScanner(r io.Reader) *Scanner {
 	return &Scanner{
 		src:    bufio.NewReader(r),
-		buf:    &bytes.Buffer{},
+		buf:    bytes.NewBuffer(make([]byte, 0, 1024)),
 		rawBuf: make([]rune, 0, 1024),
 	}
 }
