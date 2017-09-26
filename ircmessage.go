@@ -134,7 +134,7 @@ func (s *Scanner) readTags() (map[string]string, error) {
 		for _, v := range splitTags {
 			if strings.Contains(v, tokenEquals) {
 				pair := strings.Split(v, tokenEquals)
-				if len(pair) < 2 || len(pair) > 2 {
+				if len(pair) != 2 {
 					return nil, ErrMessageMalformed
 				}
 				tagMap[pair[0]] = pair[1]
